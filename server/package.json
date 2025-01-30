@@ -1,0 +1,47 @@
+{
+  "name": "che-code-server",
+  "publisher": "eclipse-che",
+  "version": "7.98.0-next",
+  "description": "The app helps the user to connect Visual Studio Code desktop to the in-cluster Visual Studio Code server over tunnel",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vitaliy-guliy/che-code-server.git"
+  },
+  "files": [
+    "out",
+    "src"
+  ],
+  "type": "module",
+  "main": "out/che-code-server.js",
+  "bin": "out/che-code-server.js",
+  "scripts": {
+    "prepare": "exit 0; npm run clean && npm run build",
+    "clean": "",
+    "build": "npm run format && npm run compile && npm run lint && npm run test",
+    "compile": "tsc --project .",
+    "format": "prettier --check '{src,tests}/**/*.ts' package.json",
+    "format:fix": "prettier --write '{src,tests}/**/*.ts' package.json",
+    "lint": "eslint --cache=true --no-error-on-unmatched-pattern=true '{src,tests}/(!model|**)/*.ts'",
+    "lint:fix": "eslint --fix --cache=true --no-error-on-unmatched-pattern=true \"{src,tests}/(!model|**)/*.{ts,tsx}\"",
+    "watch": "tsc -w",
+    "start": "node out/che-code-server.js",
+    "start:watch": "export VSCODE_CLI=/projects/code && node --watch out/che-code-server.js"
+  },
+  "dependencies": {
+    "chokidar": "^4.0.1",
+    "ejs": "^3.1.10",
+    "express": "^4.21.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "20.x",
+    "prettier": "^2.2.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.6.2",
+    "eslint": "^7.14.0"
+  },
+  "prettier": {
+    "printWidth": 120,
+    "singleQuote": true
+  }
+}

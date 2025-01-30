@@ -1,0 +1,243 @@
+<!--
+
+    Copyright (c) 2025 Red Hat, Inc.
+    This program and the accompanying materials are made
+    available under the terms of the Eclipse Public License 2.0
+    which is available at https://www.eclipse.org/legal/epl-2.0/
+
+    SPDX-License-Identifier: EPL-2.0
+
+    Contributors:
+      Red Hat, Inc. - initial API and implementation
+
+-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= devworkspaceName %></title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+    <script>
+      let authenticationCode = undefined;
+
+      // base pat of the page ( excluing '/login' at the end )
+      let basePath = location.pathname.substring(0, location.pathname.lastIndexOf('/'));
+
+      async function copyCodeToClipboard() {
+        try {
+          await navigator.clipboard.writeText(authenticationCode);
+          console.log('Content copied to clipboard');
+        } catch (err) {
+          console.error('Failed to copy: ', err);
+        }
+      }
+
+      function goto(path) {
+        window.location.assign(basePath + path);
+      }
+
+      let cancelLoginStatusCheck = true;
+
+      function loginWithMicrosoft() {
+        console.log('> login with Microsoft');
+
+        // display popup
+        document.getElementById("authenticationCode").innerText = 'Processing...';
+        document.getElementById("login").classList.add('gettingcode');
+
+        try {
+          // send post to the server and wait for the authenticating code
+          const xhr = new XMLHttpRequest();
+          xhr.open("POST", basePath + "/login_microsoft", true);
+
+          xhr.onreadystatechange = () => {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+              console.log(`POST STATUS: ${xhr.status}`);
+
+              if (xhr.status !== 200) {
+                document.getElementById("authenticationCode").innerText = `Failed. Status code: ${xhr.status}`;
+                return;
+              }
+
+              authenticationCode = xhr.responseText;
+              document.getElementById("login").classList.remove('gettingcode');
+              document.getElementById("authenticationCode").innerText = `Your Code: ${authenticationCode}`;
+              document.getElementById("login").classList.add('microsoft');
+
+              // schedule checking the login status
+              cancelLoginStatusCheck = false;
+              scheduleLoginProcessCheck();
+            }
+          };
+
+          xhr.send();
+
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      function loginWithGitHub() {
+        console.log('> login with GitHub');
+
+        // display popup
+        document.getElementById("authenticationCode").innerText = 'Processing...';
+        document.getElementById("login").classList.add('gettingcode');
+
+        try {
+          // send post to the server and wait for the authenticating code
+          const xhr = new XMLHttpRequest();
+          xhr.open("POST", basePath + "/login_github", true);
+
+          xhr.onreadystatechange = () => {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+              console.log(`POST STATUS: ${xhr.status}`);
+
+              if (xhr.status !== 200) {
+                document.getElementById("authenticationCode").innerText = `Failed. Status code: ${xhr.status}`;
+                return;
+              }
+
+              authenticationCode = xhr.responseText;
+              document.getElementById("login").classList.remove('gettingcode');
+              document.getElementById("authenticationCode").innerText = `Your Code: ${authenticationCode}`;
+              document.getElementById("login").classList.add('github');
+
+              // schedule checking the login status
+              cancelLoginStatusCheck = false;
+              scheduleLoginProcessCheck();
+            }
+          };
+
+          xhr.send();
+
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      /**
+       * Periodically check for login status
+       */
+      async function scheduleLoginProcessCheck() {
+        console.log('> schedule login process check for 2 seconds');
+
+        if (cancelLoginStatusCheck) {
+          console.log('> login canceled');
+          return;
+        }
+
+        setTimeout(() => {
+          try {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", basePath + "/login_status", true);
+            xhr.onreadystatechange = () => {
+              if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 201) {
+                  scheduleLoginProcessCheck();
+                  return;
+                }
+
+                if (xhr.status === 500) {
+                  alert('LOGIN FAILED!');
+                  return;
+                }
+
+                if (xhr.status === 200) {
+                  console.log('>> Login complete. HIDE DIALOG!!!!!!!!!!!!!!!');
+                  goto('/create');
+                }
+              }
+            };
+
+            xhr.send();
+
+          } catch (error) {
+            console.error(error);
+          }
+        }, 2000);
+      }
+
+      async function openLoginPage(url) {
+        const features = "left=100,top=100,width=1020,height=800, popup";
+
+        await copyCodeToClipboard();
+        window.open(url, "mozillaWindow", features);
+
+        // display popup
+        document.getElementById("authenticationCode").innerText = 'Processing...';
+        document.getElementById("login").classList.remove('github');
+        document.getElementById("login").classList.remove('microsoft');
+        document.getElementById("login").classList.add('gettingcode');
+      }
+
+      async function openMicrosoftLoginPage() {
+        openLoginPage("https://microsoft.com/devicelogin");
+      }
+
+      async function openGitHubLoginPage() {
+        openLoginPage("https://github.com/login/device");
+      }
+
+      function cancelLogin() {
+        console.log('> cancel login');
+        document.getElementById("login").classList.remove('microsoft');
+        document.getElementById("login").classList.remove('github');
+        document.getElementById("login").classList.remove('gettingcode');
+
+        cancelLoginStatusCheck = true;
+        microsoftLoginCanceled = true;
+      }
+
+      function openDashboard() {
+        console.log('> open Dashoard');
+      }
+
+      function closeWindow() {
+        console.log('> close window');
+      }
+    </script>
+  </head>
+  <body>
+    <pre style="display: none">
+
+      *
+      * Visual Studio Code Server
+      *
+      * By using the software, you agree to
+      * the Visual Studio Code Server License Terms (<a href="https://aka.ms/vscode-server-license" target="_blank">https://aka.ms/vscode-server-license</a>) and
+      * the Microsoft Privacy Statement (<a href="https://privacy.microsoft.com/en-US/privacystatement" target="_blank">https://privacy.microsoft.com/en-US/privacystatement</a>).
+      *
+
+
+      How would you like to log in to Visual Studio Code?
+
+        <span class="console-button" onclick="loginWithMicrosoft()"><span>❯ </span>Microsoft Account</span>
+        <span class="console-button" onclick="loginWithGitHub()"><span>❯ </span>GitHub Account</span>
+
+
+      ------------------------------------------------------------------------------------------------------
+
+      <!-- Do something else?
+
+        <span class="console-button" onclick="openDashboard()"><span>❯ </span>Open Dashboard</span>
+        <span class="console-button" onclick="closeWindow()"><span>❯ </span>Close</span> -->
+    </pre>
+
+    <div style="display: none" class="login" id="login">
+      <div class="popup">
+        <div class="icon">i</div>
+        <div class="code" id="authenticationCode">Getting Code...</div>
+        <div class="text-microsoft">To finish authenticating, navigate to <a href="https://microsoft.com/devicelogin" target="_blank">Microsoft</a> and paste in the above one-time code.</div>
+        <div class="text-github">To finish authenticating, navigate to <a href="https://github.com/login/device" target="_blank">GitHub</a> and paste in the above one-time code.</div>
+        <div class="buttons">
+          <div class="cancel" onclick="cancelLogin()" id="cancelButton">Cancel</div>
+          <div class="authenticate-microsoft" onclick="openMicrosoftLoginPage()">Copy & Continue to Microsoft</div>
+          <div class="authenticate-github" onclick="openGitHubLoginPage()">Copy & Continue to GitHub</div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

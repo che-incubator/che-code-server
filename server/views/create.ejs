@@ -1,0 +1,67 @@
+<!--
+
+    Copyright (c) 2025 Red Hat, Inc.
+    This program and the accompanying materials are made
+    available under the terms of the Eclipse Public License 2.0
+    which is available at https://www.eclipse.org/legal/epl-2.0/
+
+    SPDX-License-Identifier: EPL-2.0
+
+    Contributors:
+      Red Hat, Inc. - initial API and implementation
+
+-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= devworkspaceName %></title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+    <script>
+
+      // base pat of the page ( excluing '/login' at the end )
+      let basePath = location.pathname.substring(0, location.pathname.lastIndexOf('/'));
+
+      function goto(path) {
+        window.location.assign(basePath + path);
+      }
+
+      function logout() {
+        goto('/logout');
+      }
+
+    </script>
+
+  </head>
+  <body>
+    <pre>
+
+      *
+      * Visual Studio Code Server
+      *
+      * By using the software, you agree to
+      * the Visual Studio Code Server License Terms (<a href="https://aka.ms/vscode-server-license" target="_blank">https://aka.ms/vscode-server-license</a>) and
+      * the Microsoft Privacy Statement (<a href="https://privacy.microsoft.com/en-US/privacystatement" target="_blank">https://privacy.microsoft.com/en-US/privacystatement</a>).
+      *
+
+      
+      Tunnel name: <%= devworkspaceName %>
+      ------------------------------------------------------------------------------------------------------
+
+
+      How would you like to access your workspace?
+
+        <a href="<%= desktopLink %>" target="_self" class="console-button"><span>❯ </span>Open in <b>Visual Studio Code desktop</b></a>
+        <a href="<%= webLink %>" target="_blank" class="console-button"><span>❯ </span>Open in https://vscode.dev</a>
+
+      ------------------------------------------------------------------------------------------------------
+      
+      
+      Do something else?
+
+        <span class="console-button" onclick="logout()"><span>❯ </span>Logout</span>
+    </pre>
+
+  </body>
+</html>

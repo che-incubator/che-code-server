@@ -1,0 +1,46 @@
+{
+    "$schema": "https://schemastore.azurewebsites.net/schemas/json/tsconfig.json",
+    "compilerOptions": {
+
+        "target": "es2020",
+        "lib": [
+            "es2020",
+            "dom"
+        ],
+
+        "module": "commonjs",
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+
+        "outDir": "./out",
+        "moduleResolution": "node",
+        "forceConsistentCasingInFileNames": true,
+
+        "allowJs": true,
+        // "sourceMap": true,
+        // "declaration": true,
+        // "declarationMap": true,
+        "noImplicitAny": true,
+        "noEmitOnError": false,
+        "noImplicitThis": true,
+        "noUnusedLocals": true,
+        "strictNullChecks": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "downlevelIteration": true,
+        "resolveJsonModule": true,
+
+		"exactOptionalPropertyTypes": false,
+		"useUnknownInCatchVariables": false
+    },
+    "include": [
+        "src"
+    ],
+    "exclude": [
+        "tests/_data/workbench.js",
+        "tests/_data/workbench.test-che-plugin-registry.js",
+        "tests/_data/workbench.test-openvsix-registry.js",
+        "tests/_data/workbench.test-webview-resources.js"
+    ]
+}

@@ -1,0 +1,37 @@
+schemaVersion: 2.2.0
+metadata:
+  name: che-code-server
+components:
+  - name: tools
+    container:
+      image: quay.io/devfile/universal-developer-image:ubi8-latest
+      memoryRequest: 2G
+      memoryLimit: 8G
+      cpuRequest: '1'
+      cpuLimit: '2'
+      endpoints:
+        - name: che-code-server
+          targetPort: 3400
+          exposure: public
+          secure: true
+          protocol: https
+
+commands:
+  - id: install-dependencies
+    exec:
+      label: Install dependencies
+      component: tools
+      commandLine: npm install
+      workingDir: ${PROJECTS_ROOT}/che-code-server/server
+  - id: compile
+    exec:
+      label: Compile an Watch
+      component: tools
+      commandLine: npm run watch
+      workingDir: ${PROJECTS_ROOT}/che-code-server/server
+  - id: run
+    exec:
+      label: Run
+      component: tools
+      commandLine: npm run start:watch
+      workingDir: ${PROJECTS_ROOT}/che-code-server/server

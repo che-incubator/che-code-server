@@ -1,0 +1,221 @@
+/**
+ * Copyright (c) 2025 Red Hat, Inc.
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
+
+body {
+  padding: 0px;
+  margin: 0px;
+  /* light theme */
+  background-color: white;
+  color: rgb(42, 42, 42);
+
+  /* dark theme */
+  /* background-color: rgb(24, 24, 24);
+  color: rgb(171, 171, 171); */
+}
+
+pre {
+  font-size: 16px;
+  display: block!important;
+}
+
+/* a,
+a:visited {
+  dark theme
+  color: rgb(13 98 183)
+} */
+
+.console-button {
+  line-height: 28px;
+  text-decoration: none;
+  color: rgb(42, 42, 42);
+
+}
+
+.console-button span {
+  color: rgb(226, 226, 226);
+}
+
+.console-button:hover,
+.console-button:hover span {
+  /* light theme */
+  color: rgb(0, 102, 204);
+  cursor: pointer;
+
+  /* dark theme */
+  /* color: rgb(112 112 112); */
+}
+
+/* .console-button:hover span {
+  color: rgb(0, 102, 204);
+} */
+
+/*
+   Login popup
+*/
+
+.login {
+  position: fixed;
+  /* z-index: 1000; */
+  left: 0px;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+
+  background: rgba(0, 0, 0, .3);
+
+  justify-content: center;
+  background-origin: padding-box;
+  background-clip: border-box;
+  align-items: center;
+  /* display: flex; */
+  display: none;
+}
+
+.microsoft,
+.github,
+.gettingcode {
+  display: flex!important;
+}
+
+.login .popup {
+  position: absolute;
+  width: 520px;
+  height: 220px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 0px 8px 0px;
+  color: rgb(59, 59, 59);
+
+  background-color: rgb(248, 248, 248);
+  border-color: rgb(59, 59, 59);
+  border-radius: 6px;
+
+  display: block;
+  font-family: monospace;
+}
+
+.gettingcode .popup {
+  height: 160px;
+}
+
+.login .icon {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  left: 20px;
+  top: 36px;
+  /* background-color: antiquewhite; */
+  border: 3px #1174ad solid;
+  box-sizing: border-box;
+  color: #1174ad;
+  border-radius: 24px;
+  line-height: 40px;
+  font-size: 28px;
+  text-align: center;
+  user-select: none;
+}
+
+.login .code {
+  position: absolute;
+  top: 33px;
+  height: 48px;
+  left: 80px;
+  right: 25px;
+  /* background-color: beige; */
+  line-height: 48px;
+  font-size: 20px;
+}
+
+.login .text-microsoft,
+.login .text-github {
+  position: absolute;
+  left: 80px;
+  right: 25px;
+  top: 95px;
+  height: 44px;
+  display: none;
+  font-size: 14px;
+  /* background-color: aquamarine; */
+}
+
+.microsoft .text-microsoft {
+  display: block;
+}
+
+.github .text-github {
+  display: block;
+}
+
+.login .buttons {
+  position: absolute;
+  left: 20px;
+  right: 25px;
+  bottom: 25px;
+  height: 32px;
+  /* background-color: honeydew; */
+  display: flex;
+  justify-content: flex-end;
+}
+
+.login .cancel,
+.login .authenticate-microsoft,
+.login .authenticate-github {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  border-radius: 2px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  justify-content: center;
+  margin-left: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  overflow: hidden;
+  user-select: none;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.login .cancel {
+  background-color: rgb(229, 229, 229);
+  min-width: 100px;
+}
+
+.login .cancel:hover {
+  background-color: rgb(204, 204, 204);
+}
+
+.login .authenticate-microsoft,
+.login .authenticate-github {
+  background-color: rgb(0, 95, 184);
+  color: white;
+  display: none;
+}
+
+.microsoft .authenticate-microsoft {
+  display: flex;
+}
+
+.github .authenticate-github {
+  display: flex;
+}
+
+.login .authenticate-microsoft:hover,
+.login .authenticate-github:hover {
+  background-color: rgb(2, 88, 168)!important;
+}
+
+.primary {
+  background-color: rgb(0, 95, 184)!important;
+  color: white!important;;
+}
+
+.primary:hover {
+  background-color: rgb(2, 88, 168)!important;
+}
