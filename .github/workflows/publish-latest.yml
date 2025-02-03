@@ -9,13 +9,7 @@
 
 name: Publish che-code-server:latest
 
-on:
-  workflow_dispatch:
-    # inputs:
-    #   version:
-    #     description: 'The version that is going to be released. Should be in format 7.y.z'
-    #     required: true
-    #     default: '7.y.z'
+on: [workflow_dispatch]
 
 jobs:
 
@@ -40,10 +34,6 @@ jobs:
 
       - name: Docker Build
         run: |
-          VERSION=${{ github.event.inputs.version }}
-          echo "--------------------------------------------------------"
-          echo "version > ${VERSION}"
-          echo "--------------------------------------------------------"
           docker buildx build \
             --progress=plain \
             -f build/dockerfiles/Dockerfile \
