@@ -35,19 +35,11 @@ jobs:
       - name: Docker Build
         run: |
           docker buildx build \
+            --push \
             --progress=plain \
             -f build/dockerfiles/Dockerfile \
             -t quay.io/che-incubator/che-code-server:latest \
             .
-
-          # VERSION=${{ github.event.inputs.version }}
-          # docker buildx build \
-          #   --push \
-          #   --progress=plain \
-          #   -f build/dockerfiles/Dockerfile \
-          #   -t quay.io/che-incubator/che-code-server:latest \
-          #   -t quay.io/che-incubator/che-code-server:${VERSION} \
-          #   .
 
       - name: Display docker images
         run: |
