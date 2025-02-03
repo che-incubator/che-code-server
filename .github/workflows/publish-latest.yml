@@ -28,10 +28,6 @@ jobs:
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_PASSWORD }}
 
-      - name: Cleanup docker images
-        run: |
-          docker system prune -af
-
       - name: Docker Build
         run: |
           docker buildx build \
@@ -40,7 +36,3 @@ jobs:
             -f build/dockerfiles/Dockerfile \
             -t quay.io/che-incubator/che-code-server:latest \
             .
-
-      - name: Display docker images
-        run: |
-          docker images
