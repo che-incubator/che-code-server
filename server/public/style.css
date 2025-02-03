@@ -219,3 +219,48 @@ a:visited {
 .primary:hover {
   background-color: rgb(2, 88, 168)!important;
 }
+
+/******************************************************************************
+ * DARK THEME
+ ******************************************************************************/
+
+.dark {
+  background-color: rgb(24, 24, 24);
+  color: rgb(204, 204, 204);
+}
+
+.dark a {
+  color: #547ecd;
+}
+
+.dark .console-button {
+  color: rgb(150, 150, 204);
+}
+
+.dark .console-button span {
+  color: rgb(66, 66, 66);
+}
+
+.dark .console-button:hover,
+.dark .console-button:hover span {
+  color: rgb(0, 102, 204);
+}
+
+.dark .login .popup {
+  background-color: rgb(32, 32, 32);
+  border-color: rgb(204, 204, 204);
+  color: rgb(204, 204, 204);
+}
+
+.dark .login .cancel {
+  background-color: rgb(49, 49, 49);
+  border-color: rgba(255, 255, 255, 0.07);
+  color: rgb(204, 204, 204);
+}
+
+.dark .login .authenticate-microsoft,
+.dark .login .authenticate-github {
+  color: rgb(255, 255, 255);
+  background-color: rgb(0, 120, 212);
+  border-color: rgba(255, 255, 255, 0.07);
+}
