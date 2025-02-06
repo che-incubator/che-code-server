@@ -144,7 +144,7 @@ export class CheCodeServer {
     const projectPath = process.env.PROJECT_SOURCE;
   
     const desktopLink = `vscode://ms-vscode.remote-server/open?tunnel=${devworkspaceName}&path=${projectPath}`;
-    const webLink = `https://vscode.dev/tunnel/test/projects/${devworkspaceName}`;
+    const webLink = `https://vscode.dev/tunnel/${devworkspaceName}/projects`;
   
     response.render('create', {
       devworkspaceNamespace, 
