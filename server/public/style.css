@@ -82,7 +82,8 @@ a:visited {
 
 .microsoft,
 .github,
-.gettingcode {
+.gettingcode,
+.kubetunnel {
   display: flex!important;
 }
 
@@ -133,8 +134,23 @@ a:visited {
   font-size: 20px;
 }
 
+.login .title {
+  position: absolute;
+  top: 33px;
+  height: 48px;
+  left: 80px;
+  right: 25px;
+  /* background-color: beige; */
+  line-height: 20px;
+  font-size: 15px;
+}
+
+.kubeTunnelCli #kubeTunnelCli{
+  overflow: auto;
+}
+
 .login .text-microsoft,
-.login .text-github {
+.login .text-github{
   position: absolute;
   left: 80px;
   right: 25px;
@@ -145,11 +161,25 @@ a:visited {
   /* background-color: aquamarine; */
 }
 
+.login .text-copy {
+  position: absolute;
+  left: 80px;
+  right: 25px;
+  top: 80px;
+  height: 44px;
+  display: none;
+  font-size: 12px;
+}
+
 .microsoft .text-microsoft {
   display: block;
 }
 
 .github .text-github {
+  display: block;
+}
+
+#kubecli .text-copy{
   display: block;
 }
 
