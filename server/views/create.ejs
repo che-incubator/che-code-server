@@ -31,6 +31,70 @@
         goto('/logout');
       }
 
+      let dots = '';
+      let completed = false;
+      function scheduleTunnelCreationCheck() {
+        
+        // update text
+        dots.length < 3 ? dots += '.' : dots = '';
+        document.getElementById("loader").innerText = '\r\n        Creating tunnel' + dots + '\r\n';
+
+        setTimeout(() => {
+          if (completed) {
+            return;
+          }
+
+          if (dots === '...') {
+            try {
+              const xhr = new XMLHttpRequest();
+              xhr.open("POST", basePath + "/create_status", true);
+              xhr.onreadystatechange = () => {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                  if (xhr.status === 201) {
+                    return;
+                  }
+
+                  if (xhr.status === 500) {
+                    completed = true;
+
+                    let text = '\r\n' + xhr.responseText.split('\r\n').map((value) => {
+                      return '        ' + value;
+                    }).join('\r\n') + '\r\n';
+
+                    document.getElementById("loader").innerText = '';
+                    document.getElementById("error").innerText = text;
+
+                    return;
+                  }
+
+                  if (xhr.status === 200) {
+                    completed = true;
+
+                    document.getElementById("tunnel_creating").style.display = "none";
+                    document.getElementById("access").style.removeProperty("display");
+                    
+                    return;
+                  }
+
+                  goto('/logout');
+                }
+              };
+
+              xhr.send();
+
+            } catch (error) {
+              console.error(error);
+            }
+          }
+
+          scheduleTunnelCreationCheck();
+
+        }, 500);
+
+      }
+
+      window.onload = scheduleTunnelCreationCheck;
+
     </script>
 
   </head>
@@ -49,14 +113,14 @@
       Tunnel name: <%= devworkspaceName %>
       ------------------------------------------------------------------------------------------------------
 
-
+      <span id="access" style="display: none">
       How would you like to access your workspace?
 
         <a href="<%= desktopLink %>" target="_self" class="console-button"><span>❯ </span>Open in <b>Visual Studio Code desktop</b></a>
         <a href="<%= webLink %>" target="_blank" class="console-button"><span>❯ </span>Open in https://vscode.dev</a>
+</span><span id="tunnel_creating"><span id="loader"></span><span id="error" class="error"></span></span>
 
       ------------------------------------------------------------------------------------------------------
-      
       
       Do something else?
 

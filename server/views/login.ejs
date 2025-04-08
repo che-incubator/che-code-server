@@ -27,7 +27,7 @@
       async function copyCodeToClipboard() {
         try {
           await navigator.clipboard.writeText(authenticationCode);
-          console.log('Content copied to clipboard');
+          console.log('> Content copied to clipboard');
         } catch (err) {
           console.error('Failed to copy: ', err);
         }
@@ -53,8 +53,6 @@
 
           xhr.onreadystatechange = () => {
             if (xhr.readyState === XMLHttpRequest.DONE) {
-              console.log(`POST STATUS: ${xhr.status}`);
-
               if (xhr.status !== 200) {
                 document.getElementById("authenticationCode").innerText = `Failed. Status code: ${xhr.status}`;
                 return;
@@ -92,8 +90,6 @@
 
           xhr.onreadystatechange = () => {
             if (xhr.readyState === XMLHttpRequest.DONE) {
-              console.log(`POST STATUS: ${xhr.status}`);
-
               if (xhr.status !== 200) {
                 document.getElementById("authenticationCode").innerText = `Failed. Status code: ${xhr.status}`;
                 return;
@@ -121,8 +117,6 @@
        * Periodically check for login status
        */
       async function scheduleLoginProcessCheck() {
-        console.log('> schedule login process check for 2 seconds');
-
         if (cancelLoginStatusCheck) {
           console.log('> login canceled');
           return;
@@ -140,12 +134,11 @@
                 }
 
                 if (xhr.status === 500) {
-                  alert('LOGIN FAILED!');
+                  alert('Login failed');
                   return;
                 }
 
                 if (xhr.status === 200) {
-                  console.log('>> Login complete. HIDE DIALOG!!!!!!!!!!!!!!!');
                   goto('/create');
                 }
               }
@@ -218,11 +211,6 @@
 
 
       ------------------------------------------------------------------------------------------------------
-
-      <!-- Do something else?
-
-        <span class="console-button" onclick="openDashboard()"><span>❯ </span>Open Dashboard</span>
-        <span class="console-button" onclick="closeWindow()"><span>❯ </span>Close</span> -->
     </pre>
 
     <div style="display: none" class="login" id="login">
