@@ -50,11 +50,13 @@
               xhr.open("POST", basePath + "/create_status", true);
               xhr.onreadystatechange = () => {
                 if (xhr.readyState === XMLHttpRequest.DONE) {
-                  if (xhr.status === 201) {
+                  // still in progress
+                  if (xhr.status === 202) {
                     return;
                   }
 
-                  if (xhr.status === 500) {
+                  // failed
+                  if (xhr.status === 403) {
                     completed = true;
 
                     let text = '\r\n' + xhr.responseText.split('\r\n').map((value) => {

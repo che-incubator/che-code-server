@@ -170,9 +170,9 @@ export class CheCodeServer {
    * Returns the state of the tunnel creation process
    * 
    * 200 - tunnel created
-   * 201 - tunnel creation is still in progress
+   * 202 - tunnel creation is still in progress
    * 404 - tunnel creation is not started yet
-   * 500 - creation failed
+   * 403 - creation failed
    */
   async createStatus(request: Request, response: Response) {
     const exitCode = this.service.getExitCode();
@@ -197,7 +197,7 @@ export class CheCodeServer {
       console.log(`> output:\n${output}`);
       
       const message = output.split('\n').filter(value => value && !value.startsWith('*')).join('\r\n');
-      response.status(500).send(message);
+      response.status(403).send(message);
       return;
     }
 
@@ -215,7 +215,7 @@ export class CheCodeServer {
     }
 
     // creating is still in progress
-    response.status(201).send();
+    response.status(202).send();
   }
 }
 
