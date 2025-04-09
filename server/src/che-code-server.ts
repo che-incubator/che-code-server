@@ -18,6 +18,9 @@ if (!process.env.DEVWORKSPACE_NAME) {
   throw new Error('DEVWORKSPACE_NAME environment variable is not defined');
 }
 
+// replace dots on dashes
+process.env.DEVWORKSPACE_NAME = process.env.DEVWORKSPACE_NAME!.replaceAll('.', '-');
+
 // truncate Dev Workspace name if it is longer 20 characters
 if (process.env.DEVWORKSPACE_NAME!.length > 20) {
   process.env.DEVWORKSPACE_NAME = process.env.DEVWORKSPACE_NAME!.substring(0, 20);
