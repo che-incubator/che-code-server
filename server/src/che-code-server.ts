@@ -106,9 +106,18 @@ export class CheCodeServer {
       return;
     }
 
+    const podName = process.env.DEVWORKSPACE_POD_NAME
+    const devworkspaceName = process.env.DEVWORKSPACE_NAMESPACE
+    const projectPath = process.env.PROJECT_SOURCE
+    const containerName = process.env.DEVWORKSPACE_COMPONENT_NAME
+    const context = "REPLACE-ME"
+
+    //const desktopLink = `vscode://ms-vscode.remote-server/open?k8s-container&context=${context}&path=${projectPath}&podname=${podName}&namespace=${devworkspaceName}&name=${containerName}`;
+    const termUrl = `code --folder-uri vscode-remote://k8s-container+context=${context}+podname=${podName}+namespace=${devworkspaceName}+name=${containerName}${projectPath}`
     response.render('login', {
       devworkspaceNamespace: process.env.DEVWORKSPACE_NAMESPACE,
-      devworkspaceName: process.env.DEVWORKSPACE_NAME
+      devworkspaceName: process.env.DEVWORKSPACE_NAME,
+      kubeTunnelUrl : termUrl
     });
   }
 
@@ -155,7 +164,7 @@ export class CheCodeServer {
     const projectPath = process.env.PROJECT_SOURCE;
   
     const desktopLink = `vscode://ms-vscode.remote-server/open?tunnel=${devworkspaceName}&path=${projectPath}`;
-    const webLink = `https://vscode.dev/tunnel/test/projects/${devworkspaceName}`;
+    const webLink = `https://vscode.dev/tunnel/${devworkspaceName}/projects`;
   
     response.render('create', {
       devworkspaceNamespace, 

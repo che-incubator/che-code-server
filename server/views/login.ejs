@@ -76,6 +76,11 @@
         }
       }
 
+      function loginKubeTunnel(){
+        console.log('> login with Kube')
+        document.getElementById("kubecli").classList.add('kubetunnel')
+      }
+
       function loginWithGitHub() {
         console.log('> login with GitHub');
 
@@ -178,9 +183,23 @@
         document.getElementById("login").classList.remove('microsoft');
         document.getElementById("login").classList.remove('github');
         document.getElementById("login").classList.remove('gettingcode');
+        document.getElementById("kubecli").classList.remove('kubetunnel')
 
         cancelLoginStatusCheck = true;
         microsoftLoginCanceled = true;
+      }
+
+      function copyCli(){
+        console.log('> copy cli')
+        console.log('> Copying <%= kubeTunnelUrl %>')
+        const type = "text/plain";
+        const clipboardItemData = {
+          [type]: "<%= kubeTunnelUrl %>",
+        };
+        const clipboardItem = new ClipboardItem(clipboardItemData);
+        navigator.clipboard.write([clipboardItem]).then(()=>{
+          alert("Copy done, the shell need to have the code cli available")
+        })
       }
 
       function openDashboard() {
@@ -208,7 +227,7 @@
 
         <span class="console-button" onclick="loginWithMicrosoft()"><span>❯ </span>Microsoft Account</span>
         <span class="console-button" onclick="loginWithGitHub()"><span>❯ </span>GitHub Account</span>
-
+        <span class="console-button" onclick="loginKubeTunnel()"><span>❯ </span>Kube Tunnel</span>
 
       ------------------------------------------------------------------------------------------------------
     </pre>
@@ -220,6 +239,20 @@
         <div class="text-microsoft">To finish authenticating, navigate to <a href="https://microsoft.com/devicelogin" target="_blank">Microsoft</a> and paste in the above one-time code.</div>
         <div class="text-github">To finish authenticating, navigate to <a href="https://github.com/login/device" target="_blank">GitHub</a> and paste in the above one-time code.</div>
         <div class="buttons">
+          <div class="cancel" onclick="cancelLogin()" id="cancelButton">Cancel</div>
+          <div class="authenticate-microsoft" onclick="openMicrosoftLoginPage()">Copy & Continue to Microsoft</div>
+          <div class="authenticate-github" onclick="openGitHubLoginPage()">Copy & Continue to GitHub</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: none" class="login" id="kubecli">
+      <div class="popup">
+        <div class="icon">i</div>
+        <div class="title" id="authenticationCode">Copy/past the following command in a terminal and replace the context : </div>
+        <div class="text-copy" id="kubeTunnelCli"><%= kubeTunnelUrl %> </div>
+        <div class="buttons">
+          <div class="cancel" onclick="copyCli()" id="cancelButton">Copy</div>
           <div class="cancel" onclick="cancelLogin()" id="cancelButton">Cancel</div>
           <div class="authenticate-microsoft" onclick="openMicrosoftLoginPage()">Copy & Continue to Microsoft</div>
           <div class="authenticate-github" onclick="openGitHubLoginPage()">Copy & Continue to GitHub</div>
