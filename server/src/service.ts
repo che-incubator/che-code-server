@@ -9,29 +9,41 @@
  ***********************************************************************/
 
 import * as child_process from 'child_process';
-import { debug } from './debug.js';
 
-// export const VSCODE_CLI = '/projects/code';
 if (!process.env.VSCODE_CLI) {
   throw new Error('VSCODE_CLI environment variable is not defined');
 }
 
 export const VSCODE_CLI = process.env.VSCODE_CLI;
-console.log(`>>> VSCODE CLI CONFIGURED TO: ${VSCODE_CLI}`);
+console.log(`> Visual Studio Code CLI: ${VSCODE_CLI}`);
 
 export class Service {
 
-  async launch(): Promise<void> {
-    debug('> launching service...');
+  private exitCode: number | null = null;
+  private serviceOutput: string = '';
 
+  getExitCode(): number | null {
+    return this.exitCode;
+  }
+
+  getServiceOutput(): string {
+    return this.serviceOutput;
+  }
+
+  async launch(): Promise<void> {
     if (await this.isRunningDetached()) {
-      debug('> TUNNEL process is running detached -> RETURN. code tunnel status returned a value');
+      console.log('> tunnel process is already running.');
       return;
     }
-
-    // /projects/code --log debug tunnel --accept-server-license-terms --name ${DEVWORKSPACE_NAME}
+    
+    console.log('> creating a tunnel...');
+    
+    // code tunnel --accept-server-license-terms --name ${DEVWORKSPACE_NAME}
     const devworkspaceName = process.env.DEVWORKSPACE_NAME;
     const projectPath = process.env.PROJECT_SOURCE;
+
+    this.exitCode = -1;
+    this.serviceOutput = '';
 
     try {
       const process = child_process.spawn(VSCODE_CLI, [
@@ -42,15 +54,18 @@ export class Service {
         });
 
       process.stdout.on('data', (data: string) => {
-        debug(`stdout: ${data}`);
+        console.log(`stdout:\n${data}`);
+        this.serviceOutput += data;
       })
 
       process.stderr.on("data", (data: string) => {
-        debug(`stderr: ${data}`);
+        console.log(`stderr:\n${data}`);
+        this.serviceOutput += data;
       });
 
       process.on('exit', (code: number | null) => {
-        debug(`Process ended with code: ${code}`);
+        console.log(`Command Line Interface process ended with code: ${code}`);
+        this.exitCode = code;
       })
 
     } catch (error) {
@@ -59,13 +74,12 @@ export class Service {
   }
 
   async unregister(): Promise<void> {
-    debug('> unregister tunnel');
+    console.log('> unregister tunnel');
 
     if (await this.isRunningDetached()) {
       try {
-        const output = child_process.execSync(`${VSCODE_CLI} tunnel unregister`, { encoding: 'utf-8' });
-        debug(`Output:\n${output}`);
-        debug('>> SEEEEMS tunnel has been unregistered successfully')
+        child_process.execSync(`${VSCODE_CLI} tunnel unregister`, { encoding: 'utf-8' });
+        console.log('  > tunnel has been unregistered successfully')
       } catch (error) {
         console.error(error);
       }
@@ -74,15 +88,11 @@ export class Service {
   }
 
   async isRunningDetached(): Promise<boolean> {
-    debug('> is running detached?');
     let cliPath = VSCODE_CLI;
     const mask = `[${cliPath.charAt(0)}]${cliPath.substring(1)}`;
 
     try {
       child_process.execSync(`ps -ax | grep "${mask} tunnel --accept-server-license-terms"`, { encoding: 'utf-8' });
-      // const output = child_process.execSync(`ps -ax | grep "${mask} tunnel --accept-server-license-terms"`, { encoding: 'utf-8' });
-      // debug(`Output:\n${output}`);
-      // debug('>> SEEEEMS there are several tunnel instances')
       return true;
 
     } catch (error) {
@@ -91,50 +101,42 @@ export class Service {
   }
 
   async killAll(): Promise<void> {
-    console.log('>>>> KILL ALL !!');
+    console.log('> kill existing tunnel process');
 
     let cliPath = VSCODE_CLI;
-    // debug(`> cli path [${cliPath}]`);
     const mask = `[${cliPath.charAt(0)}]${cliPath.substring(1)}`;
-    // debug(`> mask [${mask}]`);
 
     try {
+      console.log('  > find process ID');
       const output = child_process.execSync(`ps -ax | grep "${mask} tunnel --accept-server-license-terms"`, { encoding: 'utf-8' });
 
       const lines = output.split('\n');
       for (let line of lines) {
         line = line.trim();
         if (line) {
-          debug(`>> [${line}]`);
-
+          console.log(`  > [${line}]`);
           const pid = line.substring(0, line.indexOf(' '));
-          console.log(`>> PID [${pid}]`);
-
           await this.killProcess(pid);
         }
       }
-
-
     } catch (error) {
       if (error.output) {
         const STDERR = 1;
         const output = error.output[STDERR];
-        debug(`Output BBB:\n${output}`);
+        console.log(`ERROR:\n${output}`);
       }
 
       console.error(error);
-      // throw error;
     }
   }
 
   private async killProcess(pid: string): Promise<void> {
-    try {
-      const output = child_process.execSync(`kill -9 ${pid}`, { encoding: 'utf-8' });
-      debug(`Output:\n${output}`);
+    console.log(`> kill PID: ${pid}`);
 
-      debug(`>> Process PID:${pid} seems to be killed`);
+    try {
+      child_process.execSync(`kill -9 ${pid}`, { encoding: 'utf-8' });
+      console.log(`  > killed`);
     } catch (error) {
-      debug(`>> ERR: unable to kill PID:${pid}`);
       console.error(error);
     }
   }

@@ -12,9 +12,19 @@ import express, { Request, Response, Application, NextFunction } from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { User } from './user.js';
-import { debug } from './debug.js';
 import { Service } from './service.js';
 
+if (!process.env.DEVWORKSPACE_NAME) {
+  throw new Error('DEVWORKSPACE_NAME environment variable is not defined');
+}
+
+// replace dots on dashes
+process.env.DEVWORKSPACE_NAME = process.env.DEVWORKSPACE_NAME!.replaceAll('.', '-');
+
+// truncate Dev Workspace name if it is longer 20 characters
+if (process.env.DEVWORKSPACE_NAME!.length > 20) {
+  process.env.DEVWORKSPACE_NAME = process.env.DEVWORKSPACE_NAME!.substring(0, 20);
+}
 
 const __filename = fileURLToPath(import.meta.url);    // get the resolved path to the file
 const __dirname = path.dirname(__filename);           // get the name of the directory
@@ -31,6 +41,7 @@ export enum Page {
   LOGIN_STATUS = '/login_status',          // POST
   LOGOUT = '/logout',                      // GET
   CREATE = '/create',                      // GET
+  CREATE_STATUS = '/create_status'         // POST
 }
 
 export class CheCodeServer {
@@ -41,9 +52,9 @@ export class CheCodeServer {
   service: Service = new Service();
 
   async start(): Promise<void> {
-    debug('> CheCodeServer :: start');
-    debug(`  > __dirname: ${__dirname}`);
-    debug(`  > __public: ${__public}`);
+    console.log('> CheCodeServer :: start');
+    console.log(`  > __dirname: ${__dirname}`);
+    console.log(`  > __public: ${__public}`);
 
     this.app.use(express.static(__public));
     this.app.set('view engine', 'ejs');
@@ -53,13 +64,12 @@ export class CheCodeServer {
         throw err;
       }
 
-      debug(`Che-Code Server is listening on port ${HTTP_PORT}`);
+      console.log(`Che-Code Server is listening on port ${HTTP_PORT}`);
     });
 
-    // This middleware will log the request and 
-    // allow it to proceed to the next handler
+    // This will log the request and allow it to proceed to the next handler
     this.app.use(function (request: Request, response: Response, next: NextFunction) {
-      debug(`\n\n> ${request.method} ${request.path}`);
+      console.log(`\n> ${request.method} ${request.path}`);
       next();
     });
 
@@ -70,6 +80,7 @@ export class CheCodeServer {
     this.app.post(Page.LOGIN_STATUS, async (req: Request, res: Response) => this.loginStatus(req, res));
     this.app.get(Page.LOGOUT, async (req: Request, res: Response) => this.logout(req, res));
     this.app.get(Page.CREATE, async (req: Request, res: Response) => this.create(req, res));
+    this.app.post(Page.CREATE_STATUS, async (req: Request, res: Response) => this.createStatus(req, res));
 
     if (await this.user.isLoggedIn()) {
       this.service.launch();
@@ -155,6 +166,57 @@ export class CheCodeServer {
     });
   }
 
+  /**
+   * Returns the state of the tunnel creation process
+   * 
+   * 200 - tunnel created
+   * 202 - tunnel creation is still in progress
+   * 404 - tunnel creation is not started yet
+   * 403 - creation failed
+   */
+  async createStatus(request: Request, response: Response) {
+    const exitCode = this.service.getExitCode();
+    const output = this.service.getServiceOutput();
+
+    if (null === exitCode) {
+      if (await this.service.isRunningDetached()) {
+        console.log('> tunnel seems to be created');
+        response.status(200).send();
+        return;
+      }
+
+      console.log('> tunnel creation is not started yet');
+      response.status(404).send();
+      return;
+    }
+
+    if (exitCode >= 0) {
+      // tunnel creation failed
+      // get the error from the output
+
+      console.log(`> output:\n${output}`);
+      
+      const message = output.split('\n').filter(value => value && !value.startsWith('*')).join('\r\n');
+      response.status(403).send(message);
+      return;
+    }
+
+    // tunnel creation is still in progress ( exitCode is -1 ) 
+    // new tunnel may be already created, need to check the output for readiness
+    
+    console.log(`> output:\n${output}`);
+
+    // find the line with a proposal to open the link
+    const regex = /^Open this link/gim;
+    if (regex.test(output)) {
+      console.log('> tunnel created successfully');
+      response.status(200).send();
+      return;
+    }
+
+    // creating is still in progress
+    response.status(202).send();
+  }
 }
 
 (async (): Promise<void> => {
